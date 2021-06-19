@@ -14,8 +14,10 @@ public:
 
 private:
 	std::vector<std::shared_ptr<Packet>> readyPackets;
-
 	std::unique_ptr<IncompletePacket> incompletePacket;
+
+	std::pair<size_t, size_t> findLengthSignPos(std::string str);
+	void addReadyPacket(std::string str); // this function is added, because a packet can have not valid json
 };
 
 #endif
