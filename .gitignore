@@ -1,2 +1,3 @@
 build/
 .vscode/
+client/CMakeLists.txt.user
