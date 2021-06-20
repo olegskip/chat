@@ -9,12 +9,10 @@ void Server::signIn(QString username, QString password)
 {
 	QJsonObject jsonObject;
 	jsonObject["type"] = "sign_in";
-	jsonObject["username"] = hashData(username);
+	jsonObject["username"] = username;
 	jsonObject["password"] = hashData(password);
-	jsonObject["trash"] = hashData("trash") + hashData("trash");
 
-	for(int i = 0; i < 4; ++i)
-		send(jsonObject);
+	send(jsonObject);
 
 	connect(&socket, &QTcpSocket::readyRead, [this]()
 	{
@@ -24,7 +22,7 @@ void Server::signIn(QString username, QString password)
 bool Server::send(QJsonObject &jsonObject)
 {
 	// every sended message has own id: c_n(stands for client_number) or for client and s_n (stands for server_number)
-	jsonObject["ID"] = QString("c_" +QString::number(requestID++));
+	jsonObject["id"] = QString("c_" +QString::number(requestID++));
 
 	// data is transmitted like length{json}, because two different messages can be delivered as one joined
 	const QString jsonString = QJsonDocument(jsonObject).toJson(QJsonDocument::Compact);

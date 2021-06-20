@@ -23,7 +23,6 @@ AccountRecoveryWindow::AccountRecoveryWindow(QWidget *parent): QWidget(parent)
 	recoverButton.setParent(this);
 	recoverButton.setText("Recover →");
 	recoverButton.setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-//	connect(&backButton, &QPushButton::clicked, this, &SignInWindow::showStartWindowSignal);
 	buttonsLayout.addWidget(&recoverButton);
 
 	mainLayout.addLayout(&buttonsLayout);

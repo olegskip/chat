@@ -38,22 +38,20 @@ public:
 	Packet(const IncompletePacket &packet);
 
 	const std::string &getData() const;
-	const boost::property_tree::ptree &getJsonTree() const;
+	const std::shared_ptr<boost::property_tree::ptree> getJsonTree() const;
 	bool getIsJsonValid() const;
 
 private:
 	bool convertDataToJson();
 
 	std::string data;
-	boost::property_tree::ptree jsonTree;
+	std::shared_ptr<boost::property_tree::ptree> jsonTree = std::make_shared<boost::property_tree::ptree>();
 	bool isAnswered = false;
 	bool isJsonValid = false;
 
 	// these field will be filled with json data
-	std::string ID = "";
+	std::string id = "";
 	std::string type = "";
-
-
 };
 
 

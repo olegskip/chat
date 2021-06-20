@@ -21,12 +21,13 @@ Packet::Packet(std::string data_)
 {
 	data = data_;
 
-	convertDataToJson();
+	isJsonValid = convertDataToJson();
 }
 
 Packet::Packet(const IncompletePacket &packet)
 {
 	data = packet.data;
+	isJsonValid = convertDataToJson();
 }
 
 const std::string &Packet::getData() const
@@ -34,7 +35,7 @@ const std::string &Packet::getData() const
 	return data;
 }
 
-const boost::property_tree::ptree &Packet::getJsonTree() const
+const std::shared_ptr<boost::property_tree::ptree> Packet::getJsonTree() const
 {
 	return jsonTree;
 }
@@ -49,11 +50,12 @@ bool Packet::convertDataToJson()
 	std::stringstream ss;
 	ss << data;
 	try {
-		boost::property_tree::read_json(ss, jsonTree);
-		ID = jsonTree.get<std::string>("ID");
-		type = jsonTree.get<std::string>("type");
+		boost::property_tree::read_json(ss, *jsonTree.get());
+		id = jsonTree->get<std::string>("id");
+		type = jsonTree->get<std::string>("type");
 	}
-	catch (const boost::property_tree::ptree_error &) {
+	catch (const boost::property_tree::ptree_error &e) {
+		std::cout << "what = " << e.what() << std::endl;
 		return false;
 	}
 	return true;

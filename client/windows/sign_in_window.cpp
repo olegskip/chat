@@ -56,7 +56,7 @@ void SignInWindow::signIn()
 		messageBox.move(pos().x() + (width() / 2) - messageBox.width() / 2, pos().y() + height() / 2 - messageBox.height() / 2);
 		messageBox.exec();
 	} else {
-//		setDisabled(true);
+		setDisabled(true);
 		server.signIn(userName, password);
 	}
 }

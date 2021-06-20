@@ -10,6 +10,8 @@ public:
 	PacketsManager();
 
 	void splitPackets(std::string packetsString);
+	const std::vector<std::shared_ptr<boost::property_tree::ptree>> getPacketsJson();
+	void clearReadyPackets();
 
 
 private:

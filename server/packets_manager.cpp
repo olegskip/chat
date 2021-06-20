@@ -65,6 +65,20 @@ void PacketsManager::splitPackets(std::string packetsString)
 	}
 }
 
+const std::vector<std::shared_ptr<boost::property_tree::ptree>> PacketsManager::getPacketsJson()
+{
+	std::vector<std::shared_ptr<boost::property_tree::ptree>> output;
+	for(auto readyPacket: readyPackets) {
+		output.push_back(readyPacket->getJsonTree());
+	}
+	return output;
+}
+
+void PacketsManager::clearReadyPackets()
+{
+	readyPackets.clear();
+}
+
 std::pair<size_t, size_t> PacketsManager::findLengthSignPos(std::string str) 
 {
 	size_t lengthStartPos = 0, lengthEndPos = 0;

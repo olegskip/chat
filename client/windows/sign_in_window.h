@@ -4,7 +4,6 @@
 #include <QLabel>
 #include <QScopedPointer>
 #include <QSharedPointer>
-#include <QDebug>
 #include <QKeyEvent>
 #include <QEvent>
 #include <QShortcut>
