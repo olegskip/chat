@@ -23,6 +23,10 @@ set(PROJECT_SOURCES
         windows/sign_in_window.cpp
         windows/account_recovery_window.h
         windows/account_recovery_window.cpp
+        windows/chat_window.h
+        windows/chat_window.cpp
+        widgets/message_box.h
+        widgets/message_box.cpp
         server/server.h
         server/server.cpp
 

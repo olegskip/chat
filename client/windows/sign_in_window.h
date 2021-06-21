@@ -7,10 +7,11 @@
 #include <QKeyEvent>
 #include <QEvent>
 #include <QShortcut>
-#include <QMessageBox>
 
 #include "server/server.h"
-#include <windows/account_recovery_window.h>
+#include "windows/account_recovery_window.h"
+#include "windows/chat_window.h"
+#include "widgets/message_box.h"
 
 
 class SignInWindow: public QWidget
@@ -37,7 +38,8 @@ private:
 	QPushButton signInButton;
 
 	void signIn();
-	QMessageBox messageBox;
+	void processSignInResponse(QString username, bool result);
+	QScopedPointer<ChatWindow> chatWindow;
 
 	QScopedPointer<QShortcut> sigInShortcut;
 	void enterPressed();

@@ -4,9 +4,10 @@
 #include <boost/asio.hpp>
 #include <thread>
 #include <boost/signals2.hpp>
+#include <boost/property_tree/detail/ptree_utils.hpp>
+#include <boost/algorithm/string.hpp>
 
 #include "packets_manager.h"
-
 #include "database_manager.h"
 
 

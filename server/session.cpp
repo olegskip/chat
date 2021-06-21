@@ -39,4 +39,19 @@ void Session::processPacket(const std::shared_ptr<boost::property_tree::ptree> p
 void Session::processSignIn(std::string username, std::string password)
 {
 	const bool result = databaseManager.checkSignIn(username, password);
+	boost::property_tree::ptree propertyTree;
+	propertyTree.put("type", "sign_in");
+	propertyTree.put("username", username);
+	propertyTree.put("result", int(result));
+
+	std::stringstream ss;
+	boost::property_tree::write_json(ss, propertyTree, false);
+
+	const std::string responseText = boost::trim_right_copy(ss.str());
+	std::cout << "response = " << responseText << std::endl;
+	sessionSocket.async_send(boost::asio::buffer(responseText), [this](boost::system::error_code ec, size_t length)
+	{
+
+	});
+
 }

@@ -14,9 +14,13 @@ void Server::signIn(QString username, QString password)
 
 	send(jsonObject);
 
-	connect(&socket, &QTcpSocket::readyRead, [this]()
-	{
-	});
+	connect(&socket, &QTcpSocket::readyRead, this, &Server::processData);
+}
+
+Server &Server::getInstance()
+{
+	static Server instance;
+	return instance;
 }
 
 bool Server::send(QJsonObject &jsonObject)
@@ -35,13 +39,23 @@ bool Server::send(QJsonObject &jsonObject)
 	return false;
 }
 
-Server &Server::getInstance()
-{
-	static Server instance;
-	return instance;
-}
-
 QString Server::hashData(const QString &data)
 {
 	return QString(QCryptographicHash::hash(data.toUtf8(), QCryptographicHash::Sha3_512).toHex());
+}
+
+void Server::processData()
+{
+	const QByteArray dataReceived = socket.readAll();
+	qDebug() << "data received = " << dataReceived;
+	QJsonObject jsonObject;
+	jsonObject = QJsonDocument::fromJson(dataReceived).object();
+	const QString packetType = jsonObject["type"].toString();
+	if(packetType == "sign_in")
+		processSignIn(jsonObject);
+}
+
+void Server::processSignIn(const QJsonObject &jsonObject)
+{
+	emit signInResponse(jsonObject["username"].toString(), jsonObject["result"].toString().toInt());
 }

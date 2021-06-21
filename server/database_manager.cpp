@@ -16,7 +16,6 @@ DatabaseManager::DatabaseManager()
 
 bool DatabaseManager::checkSignIn(std::string username, std::string password)
 {
-	// std::cout << "query = " << std::string(boost::str(boost::format("SELECT EXISTS(SELECT * FROM accounts WHERE username = '%1%' AND password = '%2%');") % username % password)) << std::endl;
 	result = statement->executeQuery(std::string(boost::str(boost::format("SELECT EXISTS(SELECT * FROM accounts WHERE username = '%1%'" 
 		"AND password = '%2%');") % username % password)));
 	

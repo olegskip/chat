@@ -47,18 +47,26 @@ void SignInWindow::signIn()
 	const QString userName = usernameInput.text();
 	const QString password = passwordInput.text();
 	if(userName.isEmpty() || password .isEmpty()) {
-		messageBox.setWindowTitle("Error");
-		messageBox.setStandardButtons(QMessageBox::Ok);
-		messageBox.setText("Invalid username or password");
-		messageBox.setIcon(QMessageBox::Critical);
-		messageBox.show(); // for initialization of messageBox.size()
-		messageBox.hide();
-		messageBox.move(pos().x() + (width() / 2) - messageBox.width() / 2, pos().y() + height() / 2 - messageBox.height() / 2);
-		messageBox.exec();
+		MessageBox messageBox("Error", "Invalid username or password", geometry());
 	} else {
 		setDisabled(true);
 		server.signIn(userName, password);
+		connect(&server, &Server::signInResponse, this, &SignInWindow::processSignInResponse);
 	}
+}
+
+void SignInWindow::processSignInResponse(QString username, bool result)
+{
+	if(usernameInput.text() == username && result) {
+		chatWindow.reset(new ChatWindow());
+		chatWindow->show();
+		hide();
+	}
+	else {
+		MessageBox messageBox("Error", "Invalid username or password", geometry());
+		setDisabled(false);
+	}
+	disconnect(&server, &Server::signInResponse, this, &SignInWindow::processSignInResponse);
 }
 
 void SignInWindow::enterPressed()
