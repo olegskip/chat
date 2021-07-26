@@ -1,3 +1,6 @@
-build/
-.vscode/
+server/build/
+server/.vscode/
 client/CMakeLists.txt.user
+server/src/CMakeFiles
+client/build
+server/src/Makefile
