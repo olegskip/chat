@@ -7,7 +7,6 @@ DatabaseManager::DatabaseManager() noexcept
 		sql::SQLString url = sql::SQLString("tcp://192.168.1.251:3306");
 		connection.reset(driver->connect(url, sql::SQLString("chat_user"), sql::SQLString("chat_user")));
 		connection->setSchema("chat");
-		statement.reset(connection->createStatement());
 	}
 	catch (sql::SQLException &e) {
 		std::cerr << e.what() << std::endl;
@@ -15,14 +14,34 @@ DatabaseManager::DatabaseManager() noexcept
 	}
 }
 
-bool DatabaseManager::checkSignIn(std::string username, std::string password) noexcept
+bool DatabaseManager::doesUserExist(const std::string &username) noexcept
 {
-	result.reset(statement->executeQuery(std::string(boost::str(boost::format("SELECT EXISTS(SELECT * FROM accounts WHERE username = '%1%'" 
-		"AND password = '%2%');") % username % password))));
+	std::unique_ptr<sql::PreparedStatement> statement(connection->prepareStatement("SELECT EXISTS(SELECT * FROM accounts WHERE username = ?)"));
+	statement->setString(1, username);
+	std::unique_ptr<sql::ResultSet> result(statement->executeQuery());
+	result->next();
 	
-	if(result->next())
-		return result->getBoolean(1);
-	return false;
+	return result->getBoolean(1);
+}
+
+bool DatabaseManager::checkLogIn(const std::string &username, const std::string &password) noexcept
+{
+	std::unique_ptr<sql::PreparedStatement> statement(connection->prepareStatement("SELECT EXISTS(SELECT * FROM accounts WHERE username = ? AND password = ?)"));
+	statement->setString(1, username);
+	statement->setString(2, password);
+	std::unique_ptr<sql::ResultSet> result(statement->executeQuery());
+	result->next();
+
+	return result->getBoolean(1);
+}
+
+void DatabaseManager::forceToAddUser(const std::string &email, const std::string &username, const std::string password) noexcept
+{
+	std::unique_ptr<sql::PreparedStatement> statement(connection->prepareStatement("INSERT INTO accounts(email, username, password) VALUES(?, ?, ?)"));
+	statement->setString(1, email);
+	statement->setString(2, username);
+	statement->setString(3, password);
+	statement->execute();
 }
 
 DatabaseManager &DatabaseManager::getInstance() noexcept // static

@@ -8,34 +8,28 @@ set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+add_compile_options(-Wall -Wextra)
 
-# QtCreator supports the following variables for Android, which are identical to qmake Android variables.
-# Check https://doc.qt.io/qt/deployment-android.html for more information.
-# They need to be set before the find_package( ...) calls below.
-
-#if(ANDROID)
-#    set(ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android")
-#    if (ANDROID_ABI STREQUAL "armeabi-v7a")
-#        set(ANDROID_EXTRA_LIBS
-#            ${CMAKE_CURRENT_SOURCE_DIR}/path/to/libcrypto.so
-#            ${CMAKE_CURRENT_SOURCE_DIR}/path/to/libssl.so)
-#    endif()
-#endif()
 
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Widgets REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets Network REQUIRED)
 
+get_filename_component(PARENT_DIR ${CMAKE_SOURCE_DIR} DIRECTORY)
+include_directories(${PROJECT_NAME} PUBLIC ${PARENT_DIR}/common_headers)
+
 set(PROJECT_SOURCES
     main.cpp
     windows/start_window.h windows/start_window.cpp
-    windows/sign_in_window.h windows/sign_in_window.cpp
+    windows/log_in_window.h windows/log_in_window.cpp
     windows/account_recovery_window.h windows/account_recovery_window.cpp
     windows/chat_window.h windows/chat_window.cpp
+    windows/sign_up_window.h windows/sign_up_window.cpp
     widgets/message_box.h widgets/message_box.cpp
-    server/server.h server/server.cpp
-)
+    server_connection/multiple_responses_types.h server_connection/multiple_responses_types.cpp
+    server_connection/server_connection.h server_connection/server_connection.cpp
+    ${PARENT_DIR}/common_headers/responses_codes.h ${PARENT_DIR}/common_headers/requests_types.h)
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(chat_client

@@ -14,16 +14,17 @@ public:
 	DatabaseManager(DatabaseManager const&) = delete;
 	void operator=(DatabaseManager const&) = delete;
 
-	bool checkSignIn(std::string username, std::string password) noexcept;
+	bool doesUserExist(const std::string &username) noexcept;
+	bool checkLogIn(const std::string &username, const std::string &password) noexcept;
+	void forceToAddUser(const std::string &email, const std::string &username, const std::string password) noexcept;
 
 private:
 	DatabaseManager() noexcept;
 
-	// sql classes have private destructors, so I can't use smart pointers
 	std::unique_ptr<sql::Driver> driver;
 	std::unique_ptr<sql::Connection> connection;
-	std::unique_ptr<sql::Statement> statement;
-	std::unique_ptr<sql::ResultSet> result;
+	// std::unique_ptr<sql::Statement> statement;
+	// std::unique_ptr<sql::ResultSet> result;
 };
 
 #endif // DATABASE_MANAGER_H

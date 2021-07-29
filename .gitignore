@@ -1,6 +1,8 @@
 server/build/
 server/.vscode/
-client/CMakeLists.txt.user
-server/src/CMakeFiles
-client/build
 server/src/Makefile
+server/src/CMakeFiles
+server/src/CMakeCache.txt
+server/src/cmake_install.cmake
+client/build
+client/CMakeLists.txt.user

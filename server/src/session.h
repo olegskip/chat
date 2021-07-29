@@ -9,6 +9,8 @@
 
 #include "packets_manager.h"
 #include "database_manager.h"
+#include "requests_types.h"
+#include "responses_codes.h"
 
 
 using boost::asio::ip::tcp;
@@ -27,8 +29,9 @@ private:
 	 */
 	void readData() noexcept;
 
-	void processPacket(const std::shared_ptr<boost::property_tree::ptree> packetJson) noexcept;
-	void processSignIn(std::string username, std::string password) noexcept;
+	void operateRequest(const std::shared_ptr<boost::property_tree::ptree> &requestJson) noexcept;
+	void processLogInRequest(const std::string &username, const std::string &password) noexcept;
+	void processSignUpRequest(const std::string &email, const std::string &username, const std::string &password) noexcept;
 
 	PacketsManager packetsManager;
  

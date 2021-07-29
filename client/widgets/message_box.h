@@ -3,10 +3,15 @@
 
 #include <QMessageBox>
 
+
 class MessageBox
 {
 public:
-	MessageBox(QString title, QString text, QRect parentGeometry);
+	// signal are called when the user clicks the ok button
+	MessageBox(QString title, QString text, QRect parentGeometry) noexcept;
+
+signals:
+	void buttonClicked();
 
 private:
 	QMessageBox messageBox;

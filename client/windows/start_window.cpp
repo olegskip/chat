@@ -1,40 +1,60 @@
 #include "start_window.h"
 
-StartWindow::StartWindow(QWidget *parent): QWidget(parent)
+StartWindow::StartWindow(QWidget *parent) noexcept
+	: QWidget(parent)
 {
 	setLayout(&buttonsLayout);
 
-	createNewAccountButton.setParent(this);
-	createNewAccountButton.setText("Create a new account");
-	createNewAccountButton.setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-	buttonsLayout.addWidget(&createNewAccountButton);
+	signUpButton.setParent(this);
+	signUpButton.setText("Sign up");
+	signUpButton.setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+	connect(&signUpButton, &QPushButton::clicked, this, &StartWindow::showSignUpWindow);
+	buttonsLayout.addWidget(&signUpButton);
 
-	signInButton.setParent(this);
-	signInButton.setText("Sign in");
-	signInButton.setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-	connect(&signInButton, &QPushButton::clicked, this, &StartWindow::openSignInWindow);
-	buttonsLayout.addWidget(&signInButton);
+	logInButton.setParent(this);
+	logInButton.setText("Log in");
+	logInButton.setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+	connect(&logInButton, &QPushButton::clicked, this, &StartWindow::showLogInWindow);
+	buttonsLayout.addWidget(&logInButton);
 }
 
-void StartWindow::openSignInWindow()
+void StartWindow::showSignUpWindow() noexcept
 {
-	signInWindow.reset(new SignInWindow());
-	signInWindow->resize(size());
-	signInWindow->move(pos());
-	signInWindow->show();
+	signUpWindow.reset(new SignUpWindow());
+	signUpWindow->resize(size());
+	signUpWindow->move(pos());
+	signUpWindow->show();
 
-	connect(signInWindow.get(), &SignInWindow::showStartWindowSignal, [this]()
+	connect(signUpWindow.get(), &SignUpWindow::goBackSignal, this, [this]()
 	{
-		resize(signInWindow->size());
-		move(signInWindow->pos());
-		signInWindow->hide();
+		resize(signUpWindow->size());
+		move(signUpWindow->pos());
+		signUpWindow->hide();
 		show();
 
 	});
 	hide();
 }
 
-StartWindow::~StartWindow()
+void StartWindow::showLogInWindow() noexcept
+{
+	logInWindow.reset(new LogInWindow());
+	logInWindow->resize(size());
+	logInWindow->move(pos());
+	logInWindow->show();
+
+	connect(logInWindow.get(), &LogInWindow::goBackSignal, this, [this]()
+	{
+		resize(logInWindow->size());
+		move(logInWindow->pos());
+		logInWindow->hide();
+		show();
+
+	});
+	hide();
+}
+
+StartWindow::~StartWindow() noexcept
 {
 }
 

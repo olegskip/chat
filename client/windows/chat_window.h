@@ -6,7 +6,7 @@
 class ChatWindow: public QWidget
 {
 public:
-	ChatWindow(QWidget *parent = nullptr);
+	explicit ChatWindow(QWidget *parent = nullptr) noexcept;
 };
 
 #endif // CHATWINDOW_H

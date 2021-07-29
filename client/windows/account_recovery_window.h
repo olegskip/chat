@@ -12,10 +12,10 @@ class AccountRecoveryWindow: public QWidget
 	Q_OBJECT
 
 public:
-	explicit AccountRecoveryWindow(QWidget *parent = nullptr);
+	explicit AccountRecoveryWindow(QWidget *parent = nullptr) noexcept;
 
 signals:
-	void showSignInWindowSignal();
+	void goBackSignal();
 
 private:
 	QVBoxLayout mainLayout;
@@ -24,8 +24,8 @@ private:
 	QLineEdit emailInput;
 	QLineEdit usernameInput;
 
-	QPushButton backButton;
-	QPushButton recoverButton;
+	QPushButton goBackButton;
+	QPushButton recoverButton; // ask the ServerConnection to send a request to recover the given account
 };
 
 #endif

@@ -1,7 +1,8 @@
 #ifndef STARTWINDOW_H
 #define STARTWINDOW_H
 
-#include "sign_in_window.h"
+#include "sign_up_window.h"
+#include "log_in_window.h"
 
 
 class StartWindow : public QWidget
@@ -9,17 +10,18 @@ class StartWindow : public QWidget
 	Q_OBJECT
 
 public:
-	StartWindow(QWidget *parent = nullptr);
-	~StartWindow();
+	explicit StartWindow(QWidget *parent = nullptr) noexcept;
+	~StartWindow() noexcept;
 
 private:
 	QHBoxLayout buttonsLayout;
-	QPushButton createNewAccountButton;
-	QPushButton signInButton;
+	QPushButton signUpButton;
+	QPushButton logInButton;
 
-	QScopedPointer<SignInWindow> signInWindow;
+	QScopedPointer<SignUpWindow> signUpWindow;
+	QScopedPointer<LogInWindow> logInWindow;
 
-private slots:
-	void openSignInWindow();
+	void showSignUpWindow() noexcept;
+	void showLogInWindow() noexcept;
 };
 #endif // STARTWINDOW_H

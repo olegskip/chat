@@ -52,7 +52,6 @@ bool Packet::convertDataToJson() noexcept
 	ss << data;
 	try {
 		boost::property_tree::read_json(ss, *jsonTree.get());
-		id = jsonTree->get<std::string>("id");
 		type = jsonTree->get<std::string>("type");
 	}
 	catch (const boost::property_tree::ptree_error &e) {
