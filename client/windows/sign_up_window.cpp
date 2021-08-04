@@ -5,11 +5,6 @@ SignUpWindow::SignUpWindow(QWidget *parent) noexcept
 {
 	setLayout(&mainLayout);
 
-	emailInput.setParent(this);
-	emailInput.setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-	emailInput.setPlaceholderText("email");
-	mainLayout.addWidget(&emailInput, 30);
-
 	usernameInput.setParent(this);
 	usernameInput.setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 	usernameInput.setPlaceholderText("username");
@@ -49,49 +44,44 @@ SignUpWindow::SignUpWindow(QWidget *parent) noexcept
 void SignUpWindow::askToSendSignUpRequest() noexcept
 {
 	setDisabled(true);
-	const QString email = emailInput.text();
 	const QString username = usernameInput.text();
 	const QString password = passwordInput.text();
 	const QString passwordConfirmation = passwordConfirmationInput.text();
-	if(email.isEmpty()) {
-		MessageBox messageBox("Error", "Invalid email", geometry());
-	}
-	else if(username.isEmpty()) {
-		MessageBox messageBox("Error", "Invalid username", geometry());
+
+	if(username.isEmpty()) {
+		showInformativeDialog("Error", "Invalid username", geometry());
 	}
 	else if(password.isEmpty()) {
-		MessageBox messageBox("Error", "Invalid password", geometry());
+		showInformativeDialog("Error", "Invalid password", geometry());
 	}
 	else if(password != passwordConfirmation) {
-		MessageBox messageBox("Error", "Invalid confirmation password", geometry());
+		showInformativeDialog("Error", "Invalid confirmation password", geometry());
 	}
 	else {
 		connect(&serverConnection, &ServerConnection::gotSignUpResponseSignal, this, &SignUpWindow::processSignUpResponse);
-		serverConnection.sendSignUpRequest(email, username, password);
+		serverConnection.sendSignUpRequest(username, password);
 	}
 }
 
 void SignUpWindow::processSignUpResponse(int responseCode) noexcept
 {
+	setDisabled(false);
 	if(responseCode == static_cast<int>(ResponsesCodes::SUCCESSFULLY_SIGNED_UP)) {
-		MessageBox("Information", "The account was successfully created", geometry());
+		showInformativeDialog("Information", "The account was successfully created", geometry());
 		emit goBackSignal();
 	}
 	else if(responseCode == static_cast<int>(ResponsesCodes::USERNAME_IS_TAKEN_CANNOT_SIGN_UP))
-		MessageBox("Error", "The username is already taken", geometry());
+		showInformativeDialog("Error", "The username is already taken", geometry());
 	else if(responseCode == static_cast<int>(ResponsesCodes::INVALID_USERNAME_OR_PASSWORD_TO_SIGN_UP))
-		MessageBox("Error", "The server and the client have a conflict. Try to change your login/password or update the client", geometry());
+		showInformativeDialog("Error", "The server and the client have a conflict. Try to change your login/password or update the client", geometry());
 	else
-		MessageBox("Error", "There is unexpected error", geometry());
-	setDisabled(false);
+		showInformativeDialog("Error", "There is an unexpected error", geometry());
 	disconnect(&serverConnection, &ServerConnection::gotSignUpResponseSignal, this, &SignUpWindow::processSignUpResponse);
 }
 
 void SignUpWindow::enterPressed() noexcept
 {
-	if(emailInput.hasFocus())
-		usernameInput.setFocus();
-	else if(usernameInput.hasFocus())
+	if(usernameInput.hasFocus())
 		passwordInput.setFocus();
 	else if(passwordInput.hasFocus())
 		passwordConfirmationInput.setFocus();
@@ -101,9 +91,7 @@ void SignUpWindow::enterPressed() noexcept
 
 void SignUpWindow::escapePressed() noexcept
 {
-	if(emailInput.hasFocus())
-		emailInput.clearFocus();
-	else if(usernameInput.hasFocus())
+	if(usernameInput.hasFocus())
 		usernameInput.clearFocus();
 	else if(passwordInput.hasFocus())
 		passwordInput.clearFocus();

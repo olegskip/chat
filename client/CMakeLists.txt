@@ -19,17 +19,20 @@ find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets Network REQUIRED)
 get_filename_component(PARENT_DIR ${CMAKE_SOURCE_DIR} DIRECTORY)
 include_directories(${PROJECT_NAME} PUBLIC ${PARENT_DIR}/common_headers)
 
+add_compile_definitions(IS_QT)
+
 set(PROJECT_SOURCES
     main.cpp
     windows/start_window.h windows/start_window.cpp
     windows/log_in_window.h windows/log_in_window.cpp
-    windows/account_recovery_window.h windows/account_recovery_window.cpp
     windows/chat_window.h windows/chat_window.cpp
     windows/sign_up_window.h windows/sign_up_window.cpp
-    widgets/message_box.h widgets/message_box.cpp
-    server_connection/multiple_responses_types.h server_connection/multiple_responses_types.cpp
+    widgets/informative_dialog.h widgets/informative_dialog.cpp
+    widgets/messages_box.h widgets/messages_box.cpp
+    widgets/message_widget.h widgets/message_widget.cpp
     server_connection/server_connection.h server_connection/server_connection.cpp
-    ${PARENT_DIR}/common_headers/responses_codes.h ${PARENT_DIR}/common_headers/requests_types.h)
+    ${PARENT_DIR}/common_headers/responses_codes.h ${PARENT_DIR}/common_headers/requests_types.h
+    ${PARENT_DIR}/common_headers/message.h)
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(chat_client

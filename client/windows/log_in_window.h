@@ -1,17 +1,18 @@
 #ifndef LOG_IN_WINDOW_H
 #define LOG_IN_WINDOW_H
 
+#include <QPushButton>
 #include <QLabel>
+#include <QVBoxLayout>
+#include <QLineEdit>
 #include <QScopedPointer>
 #include <QSharedPointer>
 #include <QKeyEvent>
 #include <QEvent>
 #include <QShortcut>
 
-#include "server_connection/server_connection.h"
-#include "windows/account_recovery_window.h"
 #include "windows/chat_window.h"
-#include "widgets/message_box.h"
+#include "widgets/informative_dialog.h"
 
 
 class LogInWindow: public QWidget
@@ -33,7 +34,6 @@ private:
 
 	QHBoxLayout buttonsLayout;
 	QPushButton goBackButton; // show the previous window(StartWindow)
-	QPushButton accountRecoveryButton; // show the recovery account window
 	QPushButton logInButton; // ask ServerConnection to send to the server a request to log in
 
 	void askToSendLogInRequest() noexcept;
@@ -46,9 +46,6 @@ private:
 	void escapePressed() noexcept;
 
 	ServerConnection &serverConnection = ServerConnection::getInstance();
-
-	void showRecoverAccountWindow() noexcept;
-	QScopedPointer<AccountRecoveryWindow> accountRecoveryWindow;
 };
 
 #endif // LOG_IN_WINDOW_H

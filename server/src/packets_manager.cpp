@@ -65,11 +65,13 @@ void PacketsManager::splitPackets(std::string packetsString) noexcept
 	}
 }
 
-const std::vector<std::shared_ptr<boost::property_tree::ptree>> PacketsManager::getPacketsJson() noexcept
+std::vector<std::shared_ptr<const nlohmann::json>> PacketsManager::getPacketsJson() noexcept
 {
-	std::vector<std::shared_ptr<boost::property_tree::ptree>> output;
-	for(auto readyPacket: readyPackets) {
-		output.push_back(readyPacket->getJsonTree());
+	std::vector<std::shared_ptr<const nlohmann::json>> output;
+	const std::size_t readyPacketsSize = readyPackets.size();
+	output.reserve(readyPacketsSize);
+	for(std::size_t i = 0; i < readyPacketsSize; ++i) {
+		output.push_back(readyPackets[i]->getJsonTree());
 	}
 	return output;
 }
@@ -84,11 +86,17 @@ std::pair<size_t, size_t> PacketsManager::findLengthSignPos(std::string str)
 	size_t lengthStartPos = 0, lengthEndPos = 0;
 	bool lengthStartPosPresence = false;
 
-	for(size_t i = 0; i < str.size(); ++i) {
+	const std::size_t strSize = str.size();
+	for(size_t i = 0; i < strSize; ++i) {
 		if(isdigit(str[i])) {
 			if(!lengthStartPosPresence) {
 				lengthStartPos = i;
 				lengthStartPosPresence = true;
+			}
+			// the length can be in the end
+			else if(i == strSize - 1) {
+				lengthEndPos = i;
+				break;
 			}
 		}
 		else if(lengthStartPosPresence) {

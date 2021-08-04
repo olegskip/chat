@@ -2,7 +2,7 @@
 
 // ————— IncompletePacket —————
 IncompletePacket::IncompletePacket(std::string data_, size_t expectedLength_) noexcept
-	: data(data_), expectedLength(expectedLength_)
+	:data(data_), expectedLength(expectedLength_)
 {
 
 }
@@ -36,9 +36,9 @@ const std::string &Packet::getData() const noexcept
 	return data;
 }
 
-const std::shared_ptr<boost::property_tree::ptree> Packet::getJsonTree() const noexcept
+const std::shared_ptr<const nlohmann::json> Packet::getJsonTree() const noexcept
 {
-	return jsonTree;
+	return json;
 }
 
 bool Packet::getIsJsonValid() const noexcept
@@ -48,15 +48,13 @@ bool Packet::getIsJsonValid() const noexcept
 
 bool Packet::convertDataToJson() noexcept
 {
-	std::stringstream ss;
-	ss << data;
 	try {
-		boost::property_tree::read_json(ss, *jsonTree.get());
-		type = jsonTree->get<std::string>("type");
+		json = std::make_shared<nlohmann::json>(nlohmann::json::parse(data));
+		return true;
 	}
-	catch (const boost::property_tree::ptree_error &e) {
-		std::cout << "what = " << e.what() << std::endl;
+	catch(const nlohmann::json::parse_error &e) {
+		std::cerr << "Cannot parse json. Error = " << e.what() << std::endl;
 		return false;
-	}
-	return true;
+	} 
+	
 }

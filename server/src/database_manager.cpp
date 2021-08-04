@@ -35,12 +35,19 @@ bool DatabaseManager::checkLogIn(const std::string &username, const std::string 
 	return result->getBoolean(1);
 }
 
-void DatabaseManager::forceToAddUser(const std::string &email, const std::string &username, const std::string password) noexcept
+void DatabaseManager::forceToAddUser(const std::string &username, const std::string password) noexcept
 {
-	std::unique_ptr<sql::PreparedStatement> statement(connection->prepareStatement("INSERT INTO accounts(email, username, password) VALUES(?, ?, ?)"));
-	statement->setString(1, email);
-	statement->setString(2, username);
-	statement->setString(3, password);
+	std::unique_ptr<sql::PreparedStatement> statement(connection->prepareStatement("INSERT INTO accounts(username, password) VALUES(?, ?)"));
+	statement->setString(1, username);
+	statement->setString(2, password);
+	statement->execute();
+}
+
+void DatabaseManager::addMessage(Message message)
+{
+	std::unique_ptr<sql::PreparedStatement> statement(connection->prepareStatement("INSERT INTO global_messages(sender_username, text) VALUES(?, ?)"));
+	statement->setString(1, message.senderUsername);
+	statement->setString(2, message.messageText);
 	statement->execute();
 }
 
@@ -48,4 +55,10 @@ DatabaseManager &DatabaseManager::getInstance() noexcept // static
 {
 	static DatabaseManager instance;
 	return instance;
+}
+
+DatabaseManager::~DatabaseManager() noexcept
+{
+	connection->close();
+	driver.release();
 }

@@ -9,7 +9,7 @@
 #include <memory>
 #include <iostream>
 
-#include <boost/property_tree/json_parser.hpp>
+#include <nlohmann/json.hpp>
 
 // Some packets may be too long, so they can be split to several different messages
 class IncompletePacket
@@ -28,7 +28,7 @@ public:
 /*
  * Data is transmitted as:
  * data_length{json}
- * because several different messages can be delivered as one message
+ * because several different packets can be delivered in a row
  */
 
 class Packet
@@ -38,20 +38,17 @@ public:
 	Packet(const IncompletePacket &packet) noexcept;
 
 	const std::string &getData() const noexcept;
-	const std::shared_ptr<boost::property_tree::ptree> getJsonTree() const noexcept;
+	const std::shared_ptr<const nlohmann::json> getJsonTree() const noexcept;
 	bool getIsJsonValid() const noexcept;
 
 private:
 	bool convertDataToJson() noexcept;
 
 	std::string data;
-	std::shared_ptr<boost::property_tree::ptree> jsonTree = std::make_shared<boost::property_tree::ptree>();
+	std::shared_ptr<nlohmann::json> json;
+
 	bool isAnswered = false;
 	bool isJsonValid = false;
-
-	// these field will be filled with json data
-	std::string id = "";
-	std::string type = "";
 };
 
 #endif // SESSION_H

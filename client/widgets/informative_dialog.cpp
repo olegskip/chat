@@ -1,7 +1,8 @@
-#include "message_box.h"
+#include "informative_dialog.h"
 
-MessageBox::MessageBox(QString title, QString text, QRect parentGeometry) noexcept
+void showInformativeDialog(QString title, QString text, QRect parentGeometry) noexcept
 {
+	QMessageBox messageBox;
 	messageBox.setWindowTitle(title);
 	messageBox.setStandardButtons(QMessageBox::Ok);
 	messageBox.setText(text);

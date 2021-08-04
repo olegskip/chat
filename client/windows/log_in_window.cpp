@@ -22,12 +22,6 @@ LogInWindow::LogInWindow(QWidget *parent) noexcept
 	connect(&goBackButton, &QPushButton::clicked, this, &LogInWindow::goBackSignal);
 	buttonsLayout.addWidget(&goBackButton);
 
-	accountRecoveryButton.setParent(this);
-	accountRecoveryButton.setText("Account recovery");
-	accountRecoveryButton.setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-	connect(&accountRecoveryButton, &QPushButton::clicked, this, &LogInWindow::showRecoverAccountWindow);
-	buttonsLayout.addWidget(&accountRecoveryButton);
-
 	logInButton.setParent(this);
 	logInButton.setText("Log in →");
 	logInButton.setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -48,7 +42,7 @@ void LogInWindow::askToSendLogInRequest() noexcept
 	const QString username = usernameInput.text();
 	const QString password = passwordInput.text();
 	if(username.isEmpty() || password.isEmpty()) {
-		MessageBox messageBox("Error", "Invalid username or password", geometry());
+		showInformativeDialog("Error", "Invalid username or password", geometry());
 		emit goBackSignal();
 	} else {
 		serverConnection.sendLogInRequest(username, password);
@@ -65,13 +59,13 @@ void LogInWindow::processLogInResponse(int responseCode) noexcept
 		hide();
 	}
 	else if(responseCode == static_cast<int>(ResponsesCodes::NO_SUCH_USERNAME_CANNOT_LOG_IN)) {
-		MessageBox messageBox("Error", "There is no such username", geometry());
+		showInformativeDialog("Error", "There is no such username", geometry());
 	}
 	else if(responseCode == static_cast<int>(ResponsesCodes::INCORRECT_PASSWORD_CANNOT_LOG_IN)) {
-		MessageBox messageBox("Error", "Wrong password", geometry());
+		showInformativeDialog("Error", "Wrong password", geometry());
 	}
 	else {
-		MessageBox messageBox("Error", "There is an unexpected error", geometry());
+		showInformativeDialog("Error", "There is an unexpected error", geometry());
 	}
 	setDisabled(false);
 	disconnect(&serverConnection, &ServerConnection::gotLogInResponseSignal, this, &LogInWindow::processLogInResponse);
@@ -93,19 +87,4 @@ void LogInWindow::escapePressed() noexcept
 		passwordInput.clearFocus();
 	else
 		emit goBackSignal();
-}
-
-void LogInWindow::showRecoverAccountWindow() noexcept
-{
-	accountRecoveryWindow.reset(new AccountRecoveryWindow());
-	connect(accountRecoveryWindow.get(), &AccountRecoveryWindow::goBackSignal, this, [this]()
-	{
-		resize(accountRecoveryWindow->size());
-		move(accountRecoveryWindow->pos());
-		accountRecoveryWindow->hide();
-		show();
-
-	});
-	accountRecoveryWindow->show();
-	hide();
 }

@@ -21,17 +21,13 @@ StartWindow::StartWindow(QWidget *parent) noexcept
 void StartWindow::showSignUpWindow() noexcept
 {
 	signUpWindow.reset(new SignUpWindow());
-	signUpWindow->resize(size());
-	signUpWindow->move(pos());
 	signUpWindow->show();
-
+	signUpWindow->setGeometry(geometry());
 	connect(signUpWindow.get(), &SignUpWindow::goBackSignal, this, [this]()
 	{
-		resize(signUpWindow->size());
-		move(signUpWindow->pos());
-		signUpWindow->hide();
 		show();
-
+		setGeometry(signUpWindow->geometry());
+		signUpWindow->hide();
 	});
 	hide();
 }
@@ -39,16 +35,13 @@ void StartWindow::showSignUpWindow() noexcept
 void StartWindow::showLogInWindow() noexcept
 {
 	logInWindow.reset(new LogInWindow());
-	logInWindow->resize(size());
-	logInWindow->move(pos());
 	logInWindow->show();
-
+	logInWindow->setGeometry(geometry());
 	connect(logInWindow.get(), &LogInWindow::goBackSignal, this, [this]()
 	{
-		resize(logInWindow->size());
-		move(logInWindow->pos());
-		logInWindow->hide();
 		show();
+		setGeometry(logInWindow->geometry());
+		logInWindow->hide();
 
 	});
 	hide();

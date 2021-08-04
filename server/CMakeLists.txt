@@ -25,10 +25,8 @@ add_executable(${PROJECT_NAME}
 	${CMAKE_SOURCE_DIR}/src/packets_manager.h ${CMAKE_SOURCE_DIR}/src/packets_manager.cpp 
 	${CMAKE_SOURCE_DIR}/src/packet.h ${CMAKE_SOURCE_DIR}/src/packet.cpp
 	${CMAKE_SOURCE_DIR}/src/database_manager.h ${CMAKE_SOURCE_DIR}/src/database_manager.cpp
-	${PARENT_DIR}/common_headers/responses_codes.h ${PARENT_DIR}/common_headers/requests_types.h)
-	
-
-# include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_SOURCE_DIR}/src)
+	${PARENT_DIR}/common_headers/responses_codes.h ${PARENT_DIR}/common_headers/requests_types.h
+	${PARENT_DIR}/common_headers/message.h)
 
 
 target_link_libraries(${PROJECT_NAME} MariaDB_connector)

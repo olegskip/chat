@@ -7,19 +7,16 @@
 
 enum class RequestsTypes
 {
-	// 0 is reserved
-	LOG_IN = 2 << 1,
-	SIGN_UP = 2 << 2
+	NOTHING = 0,
+	LOG_IN = 1,
+	SIGN_UP = 2,
+
+	/*
+	 * If this a request is sent from the server to the client then there are new messages,
+	 * If from the client to server then the client asks the server to post new messages
+	 */
+	NEW_MESSAGES = 4
 };
 
-
-inline std::string convertRequestTypeToString(RequestsTypes requestType)
-{
-	switch(requestType) {
-		case RequestsTypes::LOG_IN: return "log_in";
-		case RequestsTypes::SIGN_UP: return "sign_up";
-		default: throw std::logic_error("There is no string for such requestType");
-	}
-}
 
 #endif // REQUEST_TYPES_H

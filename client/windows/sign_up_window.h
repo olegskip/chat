@@ -9,7 +9,7 @@
 #include <QShortcut>
 
 #include "server_connection/server_connection.h"
-#include "widgets/message_box.h"
+#include "widgets/informative_dialog.h"
 
 
 class SignUpWindow: public QWidget
@@ -25,7 +25,7 @@ signals:
 private:
 	QVBoxLayout mainLayout;
 
-	QLineEdit emailInput, usernameInput, passwordInput, passwordConfirmationInput;
+	QLineEdit usernameInput, passwordInput, passwordConfirmationInput;
 
 	QHBoxLayout buttonsLayout;
 	QPushButton goBackButton; // show the previous window(StartWindow)

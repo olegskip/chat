@@ -10,7 +10,7 @@ public:
 	PacketsManager() noexcept;
 
 	void splitPackets(std::string packetsString) noexcept;
-	const std::vector<std::shared_ptr<boost::property_tree::ptree>> getPacketsJson() noexcept;
+	std::vector<std::shared_ptr<const nlohmann::json>> getPacketsJson() noexcept;
 	void clearReadyPackets() noexcept;
 
 

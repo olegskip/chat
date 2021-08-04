@@ -1,6 +1,8 @@
 #ifndef STARTWINDOW_H
 #define STARTWINDOW_H
 
+#include <QTimer>
+
 #include "sign_up_window.h"
 #include "log_in_window.h"
 

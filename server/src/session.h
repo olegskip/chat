@@ -2,10 +2,11 @@
 #define SESSION_h
 
 #include <boost/asio.hpp>
-#include <thread>
 #include <boost/signals2.hpp>
-#include <boost/property_tree/detail/ptree_utils.hpp>
 #include <boost/algorithm/string.hpp>
+
+#include <thread>
+#include <queue>
 
 #include "packets_manager.h"
 #include "database_manager.h"
@@ -14,14 +15,19 @@
 
 
 using boost::asio::ip::tcp;
+typedef std::queue<std::shared_ptr<const Message>> MessagesPtrQueue;
 
 class Session: public std::enable_shared_from_this<Session>
 {
 public:
 	Session(tcp::socket socket) noexcept;
 
-private:
+	boost::signals2::signal<void(MessagesPtrQueue)> newMessagesSignal;
+	boost::signals2::signal<void()> disconnectSignal;
 
+	void postNewMessages(MessagesPtrQueue &&messages);
+
+private:
 	/*
 	 * The function reads all the information from the socket,
 	 * then it splits and converts the data via the Packet class
@@ -29,20 +35,22 @@ private:
 	 */
 	void readData() noexcept;
 
-	void operateRequest(const std::shared_ptr<boost::property_tree::ptree> &requestJson) noexcept;
+	void operateRequest(std::shared_ptr<const nlohmann::json> &requestJson) noexcept;
 	void processLogInRequest(const std::string &username, const std::string &password) noexcept;
-	void processSignUpRequest(const std::string &email, const std::string &username, const std::string &password) noexcept;
-
+	void processSignUpRequest(const std::string &username, const std::string &password) noexcept;
+	void processPostMessageRequest(const std::string &messageText);	
 	PacketsManager packetsManager;
  
 	tcp::socket sessionSocket;
 
 	/*
 	 * Boost works better with its buffer, but it's more convenient to work with std::string,
-	 * they both contain littely contains the same data, but in different types
+	 * they both contain the same data, but in different types
 	 */
 	boost::asio::streambuf buffer;
 	std::string dataString;
+
+	std::string username = "";
 
 	DatabaseManager &databaseManager = DatabaseManager::getInstance();
 };
