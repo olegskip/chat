@@ -23,8 +23,8 @@ public:
 private:
 	QVBoxLayout mainLayout;
 
-//	QTextEdit senderUsernameWidget;
-//	QVector<QSharedPointer<QTextEdit>> messageTextWidgets;
+	QTextEdit senderUsernameWidget;
+	QVector<QSharedPointer<QTextEdit>> messageTextWidgets;
 
 	void updateWidgetsSize() noexcept;
 	void resizeEvent(QResizeEvent *event) override;

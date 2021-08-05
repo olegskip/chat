@@ -20,10 +20,10 @@ public:
 	void appendNewMessage(const std::shared_ptr<const Message> &message);
 
 private:
-//	QWidget mainWidget;
-//	QVBoxLayout mainLayout;
+	QWidget mainWidget;
+	QVBoxLayout mainLayout;
 
-//	QVector<QSharedPointer<MessageWidget>> messagesWidgets;
+	QVector<QSharedPointer<MessageWidget>> messagesWidgets;
 };
 
 
