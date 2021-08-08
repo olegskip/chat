@@ -5,8 +5,8 @@
 #include <QScrollArea>
 #include <QGridLayout>
 #include <QPushButton>
-#include <QVector>
 #include <QScrollBar>
+#include <QList>
 
 #include "message_widget.h"
 #include "message.h"
@@ -18,12 +18,13 @@ public:
 	explicit MessagesBox(QWidget *parent = nullptr) noexcept;
 
 	void appendNewMessage(const std::shared_ptr<const Message> &message);
+	void appendOldMessage(const std::shared_ptr<const Message> &message);
 
 private:
 	QWidget mainWidget;
 	QVBoxLayout mainLayout;
 
-	QVector<QSharedPointer<MessageWidget>> messagesWidgets;
+	QList<QSharedPointer<MessageWidget>> messagesWidgets;
 };
 
 

@@ -11,18 +11,16 @@ void Server::acceptConnections() noexcept
 {
 	tcpAcceptor.async_accept([this](boost::system::error_code ec, tcp::socket socket) noexcept
 	{
-		sessions.push_back(std::make_shared<Session>(std::move(socket)));
-		sessions.back()->newMessagesSignal.connect([this, sessionMessageSender = std::weak_ptr<Session>(sessions.back())](MessagesPtrQueue messages)
+		sessions.push_back(std::make_shared<Session>(std::move(socket), io_context));
+		sessions.back()->newMessagePostedSignal.connect([this, sessionMessageSender = std::weak_ptr<Session>(sessions.back())](std::shared_ptr<const Message> message)
 		{
 			std::shared_ptr<Session> sessionMessageSenderShared = sessionMessageSender.lock();
 			if(sessionMessageSenderShared) {
-				while(!messages.empty()) {
+				if(message->isValid()) {
 					for(auto &session: sessions) {
 						if(session != sessionMessageSenderShared)
-							session->postNewMessages(MessagesPtrQueue({messages.back()}));
+							session->addNewMessageToQueue(message);
 					}
-						
-					messages.pop();
 				}
 			}
 		});

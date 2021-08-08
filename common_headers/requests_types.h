@@ -3,19 +3,14 @@
 #define REQUEST_TYPES_H
 
 #include <string>
-#include <stdexcept>
 
 enum class RequestsTypes
 {
 	NOTHING = 0,
-	LOG_IN = 1,
-	SIGN_UP = 2,
-
-	/*
-	 * If this a request is sent from the server to the client then there are new messages,
-	 * If from the client to server then the client asks the server to post new messages
-	 */
-	NEW_MESSAGES = 4
+	LOG_IN,
+	SIGN_UP,
+	NEW_MESSAGES, // when somebody sends new messages to the server
+	LOAD_MORE_MESSAGES // when a user scrolls up and wants more messages to load from the server
 };
 
 

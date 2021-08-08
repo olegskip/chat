@@ -16,7 +16,7 @@ public:
 	explicit MessageWidget(QWidget *parent, const Message &message) noexcept;
 
 	const QString senderUsername;
-	void appendMessage(const QString text) noexcept;
+	void appendMessage(const QString text, bool addToEnd) noexcept;
 
 	~MessageWidget(){}
 

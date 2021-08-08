@@ -17,18 +17,20 @@ MessageWidget::MessageWidget(QWidget *parent, const Message &message) noexcept:
 	senderUsernameWidget.setStyleSheet("background-color: transparent; border: none;");
 	mainLayout.addWidget(&senderUsernameWidget);
 
-	appendMessage(message.messageText);
+	appendMessage(message.messageText, true);
 }
 
-void MessageWidget::appendMessage(const QString text) noexcept
+void MessageWidget::appendMessage(const QString text, bool addToEnd) noexcept
 {
 	messageTextWidgets.push_back(QSharedPointer<QTextEdit>(new QTextEdit(this)));
-	messageTextWidgets.back()->setParent(this);
 	messageTextWidgets.back()->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::MinimumExpanding);
 	messageTextWidgets.back()->setText(text);
 	messageTextWidgets.back()->setReadOnly(true);
 	messageTextWidgets.back()->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-	mainLayout.addWidget(messageTextWidgets.back().get());
+	if(addToEnd)
+		mainLayout.addWidget(messageTextWidgets.back().get());
+	else
+		mainLayout.insertWidget(1, messageTextWidgets.back().get());
 	updateWidgetsSize();
 }
 

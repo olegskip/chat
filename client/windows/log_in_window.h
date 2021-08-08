@@ -37,7 +37,7 @@ private:
 	QPushButton logInButton; // ask ServerConnection to send to the server a request to log in
 
 	void askToSendLogInRequest() noexcept;
-	void processLogInResponse(int responseCode) noexcept;
+	void processLogInResponse(QString username, int responseCode) noexcept;
 	QScopedPointer<ChatWindow> chatWindow;
 
 	QScopedPointer<QShortcut> enterShortcut;

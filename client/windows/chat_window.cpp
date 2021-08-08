@@ -1,6 +1,7 @@
 #include "chat_window.h"
 
-ChatWindow::ChatWindow() noexcept
+ChatWindow::ChatWindow(QString &&username_) noexcept:
+	username(username_)
 {
 	setLayout(&mainLayout);
 	messagesBox.setParent(this);
@@ -17,8 +18,12 @@ ChatWindow::ChatWindow() noexcept
 
 	mainLayout.addLayout(&newMessageLayout);
 
+	connect(messagesBox.verticalScrollBar(), &QScrollBar::valueChanged, this, &ChatWindow::messagesScrolled);
+
 	connect(&serverConnection, &ServerConnection::gotNewMessagesSignal, this, &ChatWindow::processNewMessages);
+	connect(&serverConnection, &ServerConnection::gotLoadMoreMessagesResponseSignal, this, &ChatWindow::processOldMessages);
 	serverConnection.startProcessingMessages();
+	serverConnection.sendLoadMoreMessagesRequest();
 }
 
 void ChatWindow::sendNewMessage() noexcept
@@ -35,8 +40,23 @@ void ChatWindow::sendNewMessage() noexcept
 void ChatWindow::processNewMessages(MessagesPtrQueue messages) noexcept
 {
 	while(!messages.empty()) {
-		messagesBox.appendNewMessage(messages.back());
+		messagesBox.appendNewMessage(messages.front());
 		messages.pop();
 	}
 }
 
+void ChatWindow::processOldMessages(MessagesPtrQueue messages) noexcept
+{
+	qDebug() << "processOldMessages";
+	while(!messages.empty()) {
+		messagesBox.appendOldMessage(messages.front());
+		messages.pop();
+	}
+}
+
+void ChatWindow::messagesScrolled(int value) noexcept
+{
+	if(value == 0) {
+		serverConnection.sendLoadMoreMessagesRequest();
+	}
+}

@@ -5,27 +5,25 @@
 #include <boost/signals2.hpp>
 #include <boost/algorithm/string.hpp>
 
-#include <thread>
-#include <queue>
+#include <mutex>
 
 #include "packets_manager.h"
 #include "database_manager.h"
 #include "requests_types.h"
 #include "responses_codes.h"
 
-
 using boost::asio::ip::tcp;
-typedef std::queue<std::shared_ptr<const Message>> MessagesPtrQueue;
 
 class Session: public std::enable_shared_from_this<Session>
 {
 public:
-	Session(tcp::socket socket) noexcept;
+	Session(tcp::socket socket, boost::asio::io_service &ioService) noexcept;
+	~Session() noexcept;
 
-	boost::signals2::signal<void(MessagesPtrQueue)> newMessagesSignal;
+	boost::signals2::signal<void(std::shared_ptr<const Message> message)> newMessagePostedSignal;
 	boost::signals2::signal<void()> disconnectSignal;
 
-	void postNewMessages(MessagesPtrQueue &&messages);
+	void addNewMessageToQueue(std::shared_ptr<const Message> &message) noexcept;
 
 private:
 	/*
@@ -38,7 +36,8 @@ private:
 	void operateRequest(std::shared_ptr<const nlohmann::json> &requestJson) noexcept;
 	void processLogInRequest(const std::string &username, const std::string &password) noexcept;
 	void processSignUpRequest(const std::string &username, const std::string &password) noexcept;
-	void processPostMessageRequest(const std::string &messageText);	
+	void processPostMessageRequest(const std::string &messageText) noexcept;
+	void proccessLoadMoreMessagesRequest() noexcept;
 	PacketsManager packetsManager;
  
 	tcp::socket sessionSocket;
@@ -51,6 +50,16 @@ private:
 	std::string dataString;
 
 	std::string username = "";
+	int oldestMessageVisibleId = -1;
+	MessagesPtrQueue newMessagesToSendQueue;
+	boost::asio::deadline_timer sendNewMessagesTimer;
+	const boost::posix_time::millisec sendNewMessagesTimerInterval = boost::posix_time::millisec(100); // milisecs
+	bool isSendNewMessagesTimerWorking = false;
+	std::mutex sendNewMessagesTimerMutex;
+	void startSendNewMessagesTimer() noexcept;
+	void sendMessagesFromQueue() noexcept;
+
+	void sendJson(const nlohmann::json &json) noexcept;
 
 	DatabaseManager &databaseManager = DatabaseManager::getInstance();
 };

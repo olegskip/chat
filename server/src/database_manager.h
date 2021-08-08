@@ -8,7 +8,6 @@
 
 #include "message.h"
 
-
 class DatabaseManager
 {
 public:
@@ -20,21 +19,15 @@ public:
 	bool doesUserExist(const std::string &username) noexcept;
 	bool checkLogIn(const std::string &username, const std::string &password) noexcept;
 	void forceToAddUser(const std::string &username, const std::string password) noexcept;
-	void addMessage(Message message);
+	void addMessage(const Message &message) noexcept;
 
 	/*
-	 * if numberOfMessages is greater than the actual number, the funcntion returns as many as possible
-	 * Returns messages located at [endPosition - numberOfMessages, endPosition]
-	 * New messages are located in the end 
+	 * if numberOfMessages is greater than the actual number of messages, the function returns as many as possible
+	 * Returns messages located at [lastMessageId - newMessagesQuantity(in message.h), newMessagesQuantity(in message.h)]
 	 */ 
-	void getOldMessages(std::size_t endPosition, std::size_t numberOfMessages);
+	MessagesPtrQueue getOldMessages(unsigned int lastMessageId) noexcept;
 
-	/*
-	 * if numberOfMessages is greater than the actual number, the funcntion returns as many as possible
-	 * Returns messages located at [startFromPosition, startFromPosition + numberOfMessages]
-	 * New messages are located in the end
-	 */ 
-	void getLastMessages(std::size_t startFromPosition, std::size_t numberOfMessages);
+	unsigned int getMessagesQuantity() const noexcept;
 
 private:
 	DatabaseManager() noexcept;
@@ -43,6 +36,9 @@ private:
 	std::unique_ptr<sql::Connection> connection;
 	std::unique_ptr<sql::Statement> statement;
 	std::unique_ptr<sql::ResultSet> result;
+
+	unsigned int messagesQuantity = 0;
+	unsigned int countMessage() noexcept;
 };
 
 #endif // DATABASE_MANAGER_H

@@ -8,12 +8,14 @@ LogInWindow::LogInWindow(QWidget *parent) noexcept
 	usernameInput.setParent(this);
 	usernameInput.setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 	usernameInput.setPlaceholderText("username");
+	usernameInput.setText("admin");
 	mainLayout.addWidget(&usernameInput, 30);
 
 	passwordInput.setParent(this);
 	passwordInput.setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 	passwordInput.setPlaceholderText("password");
 	passwordInput.setEchoMode(QLineEdit::Password);
+	passwordInput.setText("admin");
 	mainLayout.addWidget(&passwordInput, 30);
 
 	goBackButton.setParent(this);
@@ -51,11 +53,12 @@ void LogInWindow::askToSendLogInRequest() noexcept
 	setDisabled(true);
 }
 
-void LogInWindow::processLogInResponse(int responseCode) noexcept
+void LogInWindow::processLogInResponse(QString username, int responseCode) noexcept
 {
 	if(responseCode == static_cast<int>(ResponsesCodes::SUCCESSFULLY_LOGGED_IN)) {
-		chatWindow.reset(new ChatWindow());
+		chatWindow.reset(new ChatWindow(std::move(username)));
 		chatWindow->show();
+		chatWindow->setGeometry(geometry());
 		hide();
 	}
 	else if(responseCode == static_cast<int>(ResponsesCodes::NO_SUCH_USERNAME_CANNOT_LOG_IN)) {

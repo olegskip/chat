@@ -16,6 +16,8 @@ StartWindow::StartWindow(QWidget *parent) noexcept
 	logInButton.setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 	connect(&logInButton, &QPushButton::clicked, this, &StartWindow::showLogInWindow);
 	buttonsLayout.addWidget(&logInButton);
+
+	resize(500, 500);
 }
 
 void StartWindow::showSignUpWindow() noexcept
@@ -28,6 +30,7 @@ void StartWindow::showSignUpWindow() noexcept
 		show();
 		setGeometry(signUpWindow->geometry());
 		signUpWindow->hide();
+		signUpWindow.reset();
 	});
 	hide();
 }
@@ -42,7 +45,7 @@ void StartWindow::showLogInWindow() noexcept
 		show();
 		setGeometry(logInWindow->geometry());
 		logInWindow->hide();
-
+		logInWindow.reset();
 	});
 	hide();
 }

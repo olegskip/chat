@@ -9,23 +9,21 @@
 #include <QCryptographicHash>
 #include <QTcpSocket>
 
-#include <queue>
 #include <memory>
 
 #include "requests_types.h"
 #include "responses_codes.h"
 #include "message.h"
 
-typedef std::queue<std::shared_ptr<const Message>> MessagesPtrQueue;
-
 class ServerConnection: public QObject
 {
 	Q_OBJECT
 
 public:
-	void sendLogInRequest(const QString & username, const QString &password) noexcept;
-	void sendSignUpRequest(const QString & username, const QString &password) noexcept;
+	void sendLogInRequest(const QString &username, const QString &password) noexcept;
+	void sendSignUpRequest(const QString &username, const QString &password) noexcept;
 	void postNewMessage(const QString &messageText) noexcept;
+	void sendLoadMoreMessagesRequest() noexcept;
 
 	static ServerConnection &getInstance() noexcept;
 	ServerConnection(ServerConnection const&) = delete;
@@ -35,9 +33,10 @@ public:
 	void startProcessingMessages() noexcept;
 
 signals:
-	void gotLogInResponseSignal(int resultCode);
+	void gotLogInResponseSignal(QString username, int resultCode);
 	void gotSignUpResponseSignal(int resultCode);
-	void gotNewMessagesSignal(MessagesPtrQueue &messages);
+	void gotNewMessagesSignal(MessagesPtrQueue messages);
+	void gotLoadMoreMessagesResponseSignal(MessagesPtrQueue messages);
 
 private:
 	ServerConnection() noexcept;
@@ -49,7 +48,9 @@ private:
 	void processLogInResponse(const QJsonObject &jsonObject) noexcept;
 	void processSignUpResponse(const QJsonObject &jsonObject) noexcept;
 	void processNewMessages(const QJsonObject &jsonObject) noexcept;
+	void processLoadMoreMessagesResponse(const QJsonObject &jsonObject);
 
+	bool isLoadMoreMessagesEnabled = true;
 	RequestsTypes expectedResponse;
 };
 

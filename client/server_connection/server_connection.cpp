@@ -9,34 +9,51 @@ ServerConnection::ServerConnection() noexcept
 
 void ServerConnection::sendLogInRequest(const QString &username, const QString &password) noexcept
 {
+	expectedResponse = RequestsTypes::LOG_IN;
+
 	QJsonObject jsonObject;
-	jsonObject["type"] = static_cast<int>(RequestsTypes::LOG_IN);
+	jsonObject["type"] = static_cast<int>(expectedResponse);
 	jsonObject["username"] = username;
 	jsonObject["password"] = hashData(password);
 
-	expectedResponse = RequestsTypes::LOG_IN;
 	send(jsonObject);
 }
 
 void ServerConnection::sendSignUpRequest(const QString &username, const QString &password) noexcept
 {
+	expectedResponse = RequestsTypes::SIGN_UP;
+
 	QJsonObject jsonObject;
-	jsonObject["type"] = static_cast<int>(RequestsTypes::SIGN_UP);
+	jsonObject["type"] = static_cast<int>(expectedResponse);
 	jsonObject["username"] = username;
 	jsonObject["password"] = hashData(password);
 
-	expectedResponse = RequestsTypes::SIGN_UP;
 	send(jsonObject);
 }
 
 void ServerConnection::postNewMessage(const QString &messageText) noexcept
 {
+	expectedResponse = RequestsTypes::NEW_MESSAGES;
+
 	QJsonObject jsonObject;
-	jsonObject["type"] = static_cast<int>(RequestsTypes::NEW_MESSAGES);
+	jsonObject["type"] = static_cast<int>(expectedResponse);
 	jsonObject["message"] = messageText;
 
-	expectedResponse = RequestsTypes::NEW_MESSAGES;
 	send(jsonObject);
+}
+
+void ServerConnection::sendLoadMoreMessagesRequest() noexcept
+{
+	if(!isLoadMoreMessagesEnabled)
+		return;
+
+	expectedResponse = RequestsTypes::NEW_MESSAGES;
+
+	QJsonObject jsonObject;
+	jsonObject["type"] = static_cast<int>(RequestsTypes::LOAD_MORE_MESSAGES);
+
+	send(jsonObject);
+	isLoadMoreMessagesEnabled = false;
 }
 
 ServerConnection &ServerConnection::getInstance() noexcept
@@ -82,14 +99,18 @@ void ServerConnection::processData() noexcept
 		processLogInResponse(jsonObject);
 	else if(packetType == static_cast<int>(RequestsTypes::SIGN_UP) && expectedResponse == RequestsTypes::SIGN_UP)
 		processSignUpResponse(jsonObject);
-	else if(packetType == static_cast<int>(RequestsTypes::NEW_MESSAGES) && expectedResponse == RequestsTypes::NEW_MESSAGES)
-		processNewMessages(jsonObject);
-
+	else if(expectedResponse == RequestsTypes::NEW_MESSAGES) {
+		qDebug() << "expectedResponse = " << static_cast<int>(expectedResponse);
+		if(packetType == static_cast<int>(RequestsTypes::NEW_MESSAGES))
+			processNewMessages(jsonObject);
+		else if(packetType == static_cast<int>(RequestsTypes::LOAD_MORE_MESSAGES))
+			processLoadMoreMessagesResponse(jsonObject);
+	}
 }
 
 void ServerConnection::processLogInResponse(const QJsonObject &jsonObject) noexcept
 {
-	emit gotLogInResponseSignal(jsonObject["code"].toInt());
+	emit gotLogInResponseSignal(jsonObject["username"].toString(), jsonObject["code"].toInt());
 }
 
 void ServerConnection::processSignUpResponse(const QJsonObject &jsonObject) noexcept
@@ -103,8 +124,28 @@ void ServerConnection::processNewMessages(const QJsonObject &jsonObject) noexcep
 	const auto messagesJsonArray = jsonObject["messages"].toArray();
 
 	MessagesPtrQueue messages;
+	if(messages.empty())
+		return;
+
 	for(const auto &messageJson: messagesJsonArray) {
 		messages.push(std::shared_ptr<const Message>(new Message(messageJson["sender"].toString(), messageJson["text"].toString())));
 	}
 	emit gotNewMessagesSignal(messages);
+}
+
+void ServerConnection::processLoadMoreMessagesResponse(const QJsonObject &jsonObject)
+{	
+	const auto messagesJsonArray = jsonObject["messages"].toArray();
+	if(jsonObject["code"] == static_cast<int>(ResponsesCodes::THERE_ARE_NO_MORE_MESSAGES_CANT_LOAD_MORE) ||
+			jsonObject["code"] != static_cast<int>(ResponsesCodes::SUCCESSFULLY_LOADED_MORE_MESSAGES) || messagesJsonArray.empty()) {
+		isLoadMoreMessagesEnabled = false;
+		return;
+	}
+	isLoadMoreMessagesEnabled = true;
+
+	MessagesPtrQueue messages;
+	for(const auto &messageJson: messagesJsonArray) {
+		messages.push(std::shared_ptr<const Message>(new Message(messageJson["sender"].toString(), messageJson["text"].toString())));
+	}
+	emit gotLoadMoreMessagesResponseSignal(messages);
 }
